@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HPSTC and LPSTC Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3498db;
+        }
+        .input-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .input-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .calculate-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .results {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border-left: 4px solid #27ae60;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .result-value {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .formula-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #f39c12;
+        }
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .note {
+            font-style: italic;
+            color: #6c757d;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>?? HPSTC & LPSTC Calculator</h1>
+        <p class="subtitle">Based on AGMA 908-B89 Standards</p>
+        
+        <div class="input-section">
+            <h3>Gear Parameters</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="module">Module (m):</label>
+                    <input type="number" id="module" value="3" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="zp">Pinion Teeth (Zp):</label>
+                    <input type="number" id="zp" value="21">
+                </div>
+                <div class="input-group">
+                    <label for="zg">Gear Teeth (Zg):</label>
+                    <input type="number" id="zg" value="55">
+                </div>
+                <div class="input-group">
+                    <label for="pressure">Pressure Angle (deg):</label>
+                    <input type="number" id="pressure" value="20" step="0.1">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculate()">Calculate Contact Points</button>
+        </div>
+
+        <div id="results" class="results" style="display: none;">
+            <h3>?? Calculation Results</h3>
+            <div class="result-item">
+                <span class="result-label">Center Distance (C):</span>
+                <span class="result-value" id="center-distance">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Contact Ratio (£`£\):</span>
+                <span class="result-value" id="contact-ratio">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Base Circle Radius - Pinion (rbp):</span>
+                <span class="result-value" id="base-radius-pinion">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Base Circle Radius - Gear (rbg):</span>
+                <span class="result-value" id="base-radius-gear">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">HPSTC (Highest Point Single Tooth Contact):</span>
+                <span class="result-value" id="hpstc">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">LPSTC (Lowest Point Single Tooth Contact):</span>
+                <span class="result-value" id="lpstc">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Rotation Angle HPSTC to Pitch (Pinion):</span>
+                <span class="result-value" id="hpstc-angle-pinion">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Rotation Angle HPSTC to Pitch (Gear):</span>
+                <span class="result-value" id="hpstc-angle-gear">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Rotation Angle LPSTC to Pitch (Pinion):</span>
+                <span class="result-value" id="lpstc-angle-pinion">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Rotation Angle LPSTC to Pitch (Gear):</span>
+                <span class="result-value" id="lpstc-angle-gear">-</span>
+            </div>
+        </div>
+
+        <div class="formula-section">
+            <h3>?? Key Formulas Used</h3>
+            <div class="formula">
+                <strong>Contact Ratio:</strong><br>
+                £`£\ = (L_approach + L_recess - C¡Psin(£p)) / base_pitch
+            </div>
+            <div class="formula">
+                <strong>Contact Points (CORRECTED):</strong><br>
+                L_approach = ¡Ô(Rag2 - Rbg2) - Rg¡Psin(£p)<br>
+                L_recess = ¡Ô(Rap2 - Rbp2) - Rp¡Psin(£p)<br>
+                HPSTC = L_approach - base_pitch<br>
+                LPSTC = base_pitch - L_recess
+            </div>
+            <div class="formula">
+                <strong>Rotation Angles:</strong><br>
+                £c = Distance along line of action / Base radius
+            </div>
+            
+            <div class="note">
+                <strong>Note:</strong> HPSTC and LPSTC are critical points for stress analysis in gear design. 
+                HPSTC represents the point where single tooth contact begins (highest stress), 
+                while LPSTC represents where single tooth contact ends. These calculations follow AGMA 908-B89 methodology.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Get input values
+            const m = parseFloat(document.getElementById('module').value);
+            const Zp = parseInt(document.getElementById('zp').value);
+            const Zg = parseInt(document.getElementById('zg').value);
+            const phi = parseFloat(document.getElementById('pressure').value) * Math.PI / 180; // Convert to radians
+            
+            // Calculate basic parameters
+            const rp = (m * Zp) / 2; // Pinion pitch radius
+            const rg = (m * Zg) / 2; // Gear pitch radius
+            const C = rp + rg; // Center distance
+            
+            // Calculate base circle radii
+            const rbp = rp * Math.cos(phi);
+            const rbg = rg * Math.cos(phi);
+            
+            // Calculate addendum (assuming standard addendum = 1.0 * m)
+            const addendum = 1.0 * m;
+            const rap = rp + addendum; // Pinion outside radius
+            const rag = rg + addendum; // Gear outside radius
+            
+            // Calculate L_approach and L_recess (lengths along line of action) - CORRECTED FORMULAS
+            const L_approach = Math.sqrt(rag * rag - rbg * rbg) - rg * Math.sin(phi);
+            const L_recess = Math.sqrt(rap * rap - rbp * rbp) - rp * Math.sin(phi);
+            
+            // Debug output - let's see what we're getting
+            console.log('rap:', rap, 'rbp:', rbp, 'L_recess:', L_recess);
+            console.log('rag:', rag, 'rbg:', rbg, 'L_approach:', L_approach);
+            
+            // Calculate base pitch
+            const basePitch = Math.PI * m * Math.cos(phi);
+            console.log('basePitch:', basePitch);
+            
+            // Calculate contact ratio - CORRECTED
+            const contactRatio = (L_approach + L_recess) / basePitch;
+            console.log('contactRatio: (L_approach + L_recess) / basePitch =', '(', L_approach, '+', L_recess, ') /', basePitch, '=', contactRatio);
+            
+            // Calculate HPSTC and LPSTC positions from pitch point - CORRECTED
+            // HPSTC: L_approach - base_pitch 
+            const hpstcFromPitch = L_approach - basePitch;
+            console.log('HPSTC calc: L_approach - basePitch =', L_approach, '-', basePitch, '=', hpstcFromPitch);
+            
+            // LPSTC: base_pitch - L_recess
+            const lpstcFromPitch = basePitch - L_recess;
+            console.log('LPSTC calc: basePitch - L_recess =', basePitch, '-', L_recess, '=', lpstcFromPitch);
+            
+            // Calculate rotation angles from contact points to pitch point
+            // Rotation angle = distance along line of action / base radius
+            
+            // For pinion (HPSTC to pitch point)
+            const hpstcAnglePinion = hpstcFromPitch / rbp; // radians
+            const hpstcAnglePinionDeg = hpstcAnglePinion * 180 / Math.PI; // degrees
+            
+            // For gear (HPSTC to pitch point) 
+            const hpstcAngleGear = hpstcFromPitch / rbg; // radians
+            const hpstcAngleGearDeg = hpstcAngleGear * 180 / Math.PI; // degrees
+            
+            // For pinion (LPSTC to pitch point)
+            const lpstcAnglePinion = lpstcFromPitch / rbp; // radians
+            const lpstcAnglePinionDeg = lpstcAnglePinion * 180 / Math.PI; // degrees
+            
+            // For gear (LPSTC to pitch point)
+            const lpstcAngleGear = lpstcFromPitch / rbg; // radians
+            const lpstcAngleGearDeg = lpstcAngleGear * 180 / Math.PI; // degrees
+            
+            // Display results
+            document.getElementById('center-distance').textContent = C.toFixed(3) + ' mm';
+            document.getElementById('contact-ratio').textContent = contactRatio.toFixed(4);
+            document.getElementById('base-radius-pinion').textContent = rbp.toFixed(4) + ' mm';
+            document.getElementById('base-radius-gear').textContent = rbg.toFixed(4) + ' mm';
+            document.getElementById('hpstc').textContent = hpstcFromPitch.toFixed(4) + ' mm from pitch point';
+            document.getElementById('lpstc').textContent = lpstcFromPitch.toFixed(4) + ' mm from pitch point';
+            
+            // Display rotation angles
+            document.getElementById('hpstc-angle-pinion').textContent = hpstcAnglePinionDeg.toFixed(4) + ' deg (' + hpstcAnglePinion.toFixed(6) + ' rad)';
+            document.getElementById('hpstc-angle-gear').textContent = hpstcAngleGearDeg.toFixed(4) + ' deg (' + hpstcAngleGear.toFixed(6) + ' rad)';
+            document.getElementById('lpstc-angle-pinion').textContent = lpstcAnglePinionDeg.toFixed(4) + ' deg (' + lpstcAnglePinion.toFixed(6) + ' rad)';
+            document.getElementById('lpstc-angle-gear').textContent = lpstcAngleGearDeg.toFixed(4) + ' deg (' + lpstcAngleGear.toFixed(6) + ' rad)';
+            
+            // Show results section
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        // Calculate on page load
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>
